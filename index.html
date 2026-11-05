@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Swarn Jaisalmer — The Arrival</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Hanken+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0e0b08;
+      --ink: #efe3cc;
+      --mute: rgba(239, 227, 204, 0.65);
+      --sand: #d9a35a;
+      --display: "Cormorant Garamond", Georgia, serif;
+      --body: "Hanken Grotesk", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: var(--body);
+      overflow-x: hidden;
+    }
+
+    /* TOP HUD */
+    .hud-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 2.2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      pointer-events: auto;
+    }
+
+    .back-arrow {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    .brand-title {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .chapter-progress-track {
+      width: 110px;
+      height: 1px;
+      background: rgba(239, 227, 204, 0.25);
+      margin: 0.45rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chapter-progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: var(--ink);
+    }
+
+    .chapter-subtitle {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--mute);
+    }
+
+    .hud-controls {
+      display: flex;
+      gap: 0.75rem;
+      pointer-events: auto;
+    }
+
+    .status-badge {
+      background: rgba(14, 11, 8, 0.65);
+      border: 1px solid rgba(217, 163, 90, 0.4);
+      padding: 0.45rem 0.9rem;
+      border-radius: 4px;
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .status-badge:hover {
+      border-color: var(--sand);
+      background: rgba(217, 163, 90, 0.15);
+    }
+
+    /* SCROLL TRACK & STICKY STAGE */
+    .scroll-track {
+      height: 500vh;
+      position: relative;
+    }
+
+    .sticky-stage {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    #walkthroughVideo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      z-index: 2;
+    }
+
+    .sticky-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.45) 0%,
+        transparent 25%,
+        transparent 80%,
+        rgba(14, 11, 8, 0.85) 100%
+      );
+      pointer-events: none;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink);
+      opacity: 0.8;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    /* CONTENT SECTION */
+    .content-section {
+      position: relative;
+      z-index: 10;
+      background: var(--bg);
+      padding: 8rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .content-section h1 {
+      font-family: var(--display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 400;
+      color: var(--sand);
+      margin-bottom: 1.5rem;
+    }
+
+    .content-section p {
+      line-height: 1.8;
+      color: var(--mute);
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+    }
+
+    /* PERSONAL CONTACT CARD */
+    .creator-card {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.75rem 3.5rem;
+      background: rgba(217, 163, 90, 0.04);
+      border: 1px solid rgba(217, 163, 90, 0.25);
+      border-radius: 6px;
+    }
+
+    .creator-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--sand);
+    }
+
+    .creator-name {
+      font-family: var(--display);
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+    }
+
+    .creator-phone {
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--mute);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .creator-phone:hover {
+      color: var(--sand);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hud-header">
+    <div class="hud-brand">
+      <a href="#" class="back-arrow">&#8592;</a>
+      <div>
+        <div class="brand-title">Swarn Jaisalmer</div>
+        <div class="chapter-progress-track">
+          <div class="chapter-progress-fill" id="progressBar"></div>
+        </div>
+        <div class="chapter-subtitle" id="chapterTitle">The Arrival</div>
+      </div>
+    </div>
+
+    <div class="hud-controls">
+      <input type="file" id="videoFilePicker" accept="video/*" style="display:none">
+      <button class="status-badge" id="pickVideoBtn" onclick="document.getElementById('videoFilePicker').click()">
+        Select Video File
+      </button>
+      <button class="status-badge" id="soundBtn">Sound Off</button>
+    </div>
+  </header>
+
+  <section class="scroll-track" id="scrollTrack">
+    <div class="sticky-stage">
+      <video id="walkthroughVideo" src="img/walkthrough.mp4" muted playsinline preload="auto"></video>
+      <div class="scroll-hint" id="scrollHint">Scroll to walk through</div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h1>Welcome to the Courtyard</h1>
+    <p>
+      Carved from golden Jaisalmer sandstone, step inside a timeless sanctuary where ornate jharokhas and tranquil courtyards echo centuries of royal craftsmanship.
+    </p>
+
+    <!-- YOUR NAME & NUMBER CARD -->
+    <div class="creator-card">
+      <span class="creator-label">Curated By</span>
+      <div class="creator-name">Aunkar Singh</div>
+      <a href="tel:+919549413482" class="creator-phone">+91 95494 13482</a>
+    </div>
+  </section>
+
+  <script>
+    const video = document.getElementById("walkthroughVideo");
+    const scrollTrack = document.getElementById("scrollTrack");
+    const progressBar = document.getElementById("progressBar");
+    const chapterTitle = document.getElementById("chapterTitle");
+    const scrollHint = document.getElementById("scrollHint");
+    const pickVideoBtn = document.getElementById("pickVideoBtn");
+    const videoFilePicker = document.getElementById("videoFilePicker");
+    const soundBtn = document.getElementById("soundBtn");
+
+    video.addEventListener("loadedmetadata", () => {
+      pickVideoBtn.style.display = "none";
+      video.currentTime = 0.001;
+    });
+
+    videoFilePicker.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        video.src = URL.createObjectURL(file);
+        video.load();
+        pickVideoBtn.style.display = "none";
+      }
+    });
+
+    soundBtn.addEventListener("click", () => {
+      video.muted = !video.muted;
+      soundBtn.textContent = video.muted ? "Sound Off" : "Sound On";
+    });
+
+    let targetProgress = 0;
+    let smoothProgress = 0;
+
+    window.addEventListener("scroll", () => {
+      const rect = scrollTrack.getBoundingClientRect();
+      const maxScroll = scrollTrack.offsetHeight - window.innerHeight;
+      targetProgress = Math.max(0, Math.min(1, -rect.top / maxScroll));
+      scrollHint.style.opacity = targetProgress > 0.03 ? "0" : "0.8";
+    }, { passive: true });
+
+    function tick() {
+      smoothProgress += (targetProgress - smoothProgress) * 0.08;
+      progressBar.style.width = `${(smoothProgress * 100).toFixed(1)}%`;
+
+      if (smoothProgress < 0.33) {
+        chapterTitle.textContent = "The Arrival";
+      } else if (smoothProgress < 0.70) {
+        chapterTitle.textContent = "The Haveli Lane";
+      } else {
+        chapterTitle.textContent = "The Inner Courtyard";
+      }
+
+      if (video.duration && !isNaN(video.duration)) {
+        const desiredTime = smoothProgress * video.duration;
+        if (Math.abs(video.currentTime - desiredTime) > 0.01 && !video.seeking) {
+          video.currentTime = desiredTime;
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
